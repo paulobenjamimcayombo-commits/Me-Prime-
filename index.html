@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>App Académico - Mobile</title>
+    <style>
+        :root {
+            --bg-color: #121214;
+            --card-bg: #1f1f23;
+            --primary: #6366f1;
+            --primary-hover: #4f46e5;
+            --success: #22c55e;
+            --error: #ef4444;
+            --text-main: #f3f4f6;
+            --text-muted: #9ca3af;
+            --border: #27272a;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #09090b;
+            color: var(--text-main);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 10px;
+        }
+
+        /* Estrutura do Telemóvel */
+        .phone-container {
+            width: 100%;
+            max-width: 400px;
+            height: 800px;
+            background-color: var(--bg-color);
+            border: 4px solid var(--border);
+            border-radius: 36px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Barra Superior (Header) */
+        .app-header {
+            background-color: var(--card-bg);
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .app-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .user-points {
+            background-color: rgba(99, 102, 241, 0.1);
+            color: var(--primary);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: bold;
+        }
+
+        /* Área de Conteúdo (Ecrãs) */
+        .app-body {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .screen {
+            display: none;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Elementos de Formulário */
+        h2 {
+            font-size: 1.4rem;
+            margin-bottom: 15px;
+            color: var(--text-main);
+        }
+
+        p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            margin-bottom: 20px;
+            line-height: 1.4;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 5px;
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 12px 15px;
+            background-color: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            color: var(--text-main);
+            font-size: 0.95rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        input:focus, textarea:focus {
+            border-color: var(--primary);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 14px;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s, transform 0.1s;
+            margin-top: 10px;
+        }
+
+        .btn:hover {
+            background-color: var(--primary-hover);
+        }
+
+        .btn:active {
+            transform: scale(0.98);
+        }
+
+        /* Caixas de Resumo e Feedback */
+        .card-box {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+
+        .feedback-box {
+            text-align: center;
+            padding: 20px;
+            border-radius: 12px;
+            margin-top: 15px;
+            font-weight: bold;
+            font-size: 1.2rem;
+            display: none;
+        }
+
+        .feedback-box.correct {
+            background-color: rgba(34, 197, 94, 0.15);
+            color: var(--success);
+            border: 1px solid var(--success);
+        }
+
+        .feedback-box.wrong {
+            background-color: rgba(239, 68, 68, 0.15);
+            color: var(--error);
+            border: 1px solid var(--error);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="phone-container">
+        <!-- Cabeçalho com Pontuação Global -->
+        <header class="app-header">
+            <span class="app-title">📚 StudyApp</span>
+            <div class="user-points">⚡ <span id="pointsDisplay">0</span> pts</div>
+        </header>
+
+        <div class="app-body">
+            
+            <!-- PASSO 1: Login / Conta -->
+            <div id="screen1" class="screen active">
+                <h2>Criar Conta / Login</h2>
+                <p>Insere os teus dados para acederes ao espaço da tua turma.</p>
+                <div class="form-group">
+                    <label>Nome do Aluno</label>
+                    <input type="text" id="userName" placeholder="Ex: Paulo Benjamim">
+                </div>
+                <div class="form-group">
+                    <label>Instituição / Escola</label>
+                    <input type="text" id="userSchool" placeholder="Ex: Eusébio Nelson">
+                </div>
+                <div class="form-group">
+                    <label>Turma</label>
+                    <input type="text" id="userClass" placeholder="Ex: 10.2">
+                </div>
+                <button class="btn" onclick="nextScreen(2)">Entrar no App</button>
+            </div>
+
+            <!-- PASSO 2: Inserir Horário e Professores -->
+            <div id="screen2" class="screen">
+                <h2>Horário e Professores</h2>
+                <p>Define o teu horário ou carrega a foto oficial da turma.</p>
+                <div class="form-group">
+                    <label>Carregar Foto do Horário</label>
+                    <input type="file" accept="image/*">
+                </div>
+                <div class="form-group">
+                    <label>Ou Escrever Disciplina e Professor</label>
+                    <input type="text" placeholder="Ex: Física - Prof. Carlos">
+                </div>
+                <button class="btn" onclick="nextScreen(3)">Guardar Horário</button>
+            </div>
+
+            <!-- PASSO 3: Inserir Matéria da Aula -->
+            <div id="screen3" class="screen">
+                <h2>Matéria da Aula</h2>
+                <p>Envia a foto dos apontamentos ou escreve o tema lecionado hoje.</p>
+                <div class="form-group">
+                    <label>Foto dos Apontamentos / Quadro</label>
+                    <input type="file" accept="image/*">
+                </div>
+                <div class="form-group">
+                    <label>Ou Resumo dos Tópicos</label>
+                    <textarea rows="3" placeholder="Ex: Termodinâmica e leis dos gases..."></textarea>
+                </div>
+                <button class="btn" onclick="nextScreen(4)">Processar Matéria</button>
+            </div>
+
+            <!-- PASSO 4: Resumo Gerado e Questões -->
+            <div id="screen4" class="screen">
+                <h2>Resumo & Questões</h2>
+                <p>O aplicativo gerou o resumo automático da aula e preparou a questão para ti.</p>
+                <div class="card-box">
+                    <strong>📖 Resumo da Aula:</strong>
+                    <p style="margin-top: 5px; margin-bottom: 0;">Estudo focado nas transformações gasosas e comportamento da pressão e volume em sistemas fechados.</p>
+                </div>
+                <div class="card-box">
+                    <strong>❓ Questão 1:</strong>
+                    <p style="margin-top: 5px; margin-bottom: 0;">O que acontece ao volume de um gás quando a temperatura aumenta a pressão constante?</p>
+                </div>
+                <button class="btn" onclick="nextScreen(5)">Responder Questão</button>
+            </div>
+
+            <!-- PASSO 5: Página de Resposta do Aluno -->
+            <div id="screen5" class="screen">
+                <h2>A tua Resposta</h2>
+                <p>Escreve abaixo a tua resposta para a questão apresentada.</p>
+                <div class="form-group">
+                    <textarea id="userAnswer" rows="4" placeholder="Escreve aqui a tua resposta..."></textarea>
+                </div>
+                <button class="btn" onclick="evaluateAnswer()">Submeter Resposta</button>
+            </div>
+
+            <!-- PASSO 6 & 7: Avaliação (Correto/Errado) e Pontos -->
+            <div id="screen6" class="screen">
+                <h2>Resultado</h2>
+                <p>Avaliação instantânea do teu desempenho na aula.</p>
+                
+                <div id="feedbackBox" class="feedback-box">
+                    <!-- Mensagem Correto / Errado injetada via JS -->
+                </div>
+
+                <button class="btn" style="margin-top: 20px;" onclick="resetFlow()">Estudar Outra Aula</button>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        let currentPoints = 10; // Pontos iniciais de exemplo
+
+        function updatePointsDisplay() {
+            document.getElementById('pointsDisplay').innerText = currentPoints;
+        }
+        updatePointsDisplay();
+
+        function nextScreen(screenNumber) {
+            // Ocultar todos os ecrãs
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            // Mostrar o ecrã pretendido
+            document.getElementById('screen' + screenNumber).classList.add('active');
+        }
+
+        function evaluateAnswer() {
+            const answer = document.getElementById('userAnswer').value.trim();
+            const feedbackBox = document.getElementById('feedbackBox');
+            
+            if (answer === "") {
+                alert("Por favor, escreve uma resposta antes de submeter!");
+                return;
+            }
+
+            // Simulação simples de avaliação (se escrever mais de 3 palavras, consideramos "Correto" para teste)
+            const isCorrect = answer.length > 5; 
+
+            if (isCorrect) {
+                feedbackBox.className = "feedback-box correct";
+                feedbackBox.innerHTML = "✅ Correto! Ganhou +10 pontos (Gain)!";
+                currentPoints += 10;
+            } else {
+                feedbackBox.className = "feedback-box wrong";
+                feedbackBox.innerHTML = "❌ Errado! Perdeu -5 pontos.";
+                currentPoints -= 5;
+            }
+
+            feedbackBox.style.display = "block";
+            updatePointsDisplay();
+            nextScreen(6);
+        }
+
+        function resetFlow() {
+            document.getElementById('userAnswer').value = "";
+            document.getElementById('feedbackBox').style.display = "none";
+            nextScreen(2); // Volta ao horário para nova ronda
+        }
+    </script>
+</body>
+</html>
